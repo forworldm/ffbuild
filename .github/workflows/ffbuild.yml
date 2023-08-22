@@ -1,0 +1,37 @@
+name: Build WSL RootFS
+
+on:
+  push:
+    branches: [ "docker-debian" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: |
+          docker build -t bullseye-cpp .
+
+      - name: Create container
+        run: |
+          docker create --name build-container bullseye-cpp
+
+      - name: Export rootfs (compressed)
+        run: |
+          docker export build-container | gzip > rootfs.tar.gz
+
+      - name: Remove container
+        run: |
+          docker rm build-container
+
+      - name: Upload RootFS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsl-bullseye-cpp-rootfs
+          path: rootfs.tar.gz
+          retention-days: 5
