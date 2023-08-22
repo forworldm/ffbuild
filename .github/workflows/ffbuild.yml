@@ -1,0 +1,22 @@
+name: ffbuild
+
+on:
+  push:
+    branches:
+      - 'dev-dev'
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout
+              uses: actions/checkout@v3
+
+            - name: build
+              run: ./build.sh
+
+            - name: upload
+              uses: actions/upload-artifact@v3
+              with:
+                  name: packages
+                  path: ./prefix.tar
