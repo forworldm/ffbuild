@@ -3,7 +3,7 @@ name: ffbuild
 on:
   push:
     branches:
-      - 'dev-dev'
+      - 'android-python'
 
 jobs:
     build:
@@ -12,11 +12,15 @@ jobs:
             - name: checkout
               uses: actions/checkout@v3
 
+            - uses: actions/setup-python@v5
+              with:
+                python-version: 'v3.13'
+
             - name: build
-              run: ./build.sh
+              run: chmod +x ./build_py_all.sh && ./build_py_all.sh
 
             - name: upload
               uses: actions/upload-artifact@v3
               with:
                   name: packages
-                  path: ./prefix.tar
+                  path: ./prefix*.tar
