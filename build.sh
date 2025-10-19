@@ -7,11 +7,13 @@ sudo apt install meson nasm yasm
 [[ -e ffmpeg ]] || git clone --depth=1 https://github.com/FFmpeg/FFmpeg.git
 [[ -e mbedtls ]] || git clone --recursive --depth=1 --branch mbedtls-3.6 --single-branch https://github.com/Mbed-TLS/mbedtls.git
 [[ -e dav1d ]] || git clone --depth=1 https://github.com/videolan/dav1d.git
+[[ -e libsndfile ]] || git clone --depth=1 --branch 1.2.2 --single-branch https://github.com/libsndfile/libsndfile.git
 
 [[ -e "$prefix" ]] && rm -rf "$prefix"
 [[ -e _build_mbedtls ]] && rm -rf _build_mbedtls
 [[ -e _build_dav1d ]] && rm -rf _build_dav1d
 [[ -e _build_ffmpeg ]] && rm -rf _build_ffmpeg
+[[ -e _build_sndfile ]] && rm-rf _build_sndfile
 
 cmake -S mbedtls -B _build_mbedtls -DCMAKE_INSTALL_PREFIX="$prefix" -DCMAKE_BUILD_TYPE=Release \
 	-DBUILD_SHARED_LIBS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
@@ -34,5 +36,11 @@ pushd _build_ffmpeg
 make -j4
 make install
 popd
+
+cmake -S libsndfile -B _build_sndfile -DCMAKE_INSTALL_PREFIX="$prefix" -DCMAKE_BUILD_TYPE=Release \
+    -DENABLE_{EXTERNAL_LIBS,MPEG}=OFF -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_{TESTING,PROGRAMS,EXAMPLES}=OFF
+cmake --build _build_sndfile
+cmake --install _build_sndfile
 
 tar -cf prefix.tar -C "$prefix" .
