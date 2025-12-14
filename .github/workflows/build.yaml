@@ -1,0 +1,52 @@
+name: Go Build and Package
+
+on:
+  push:
+    branches:
+      - 'v2ray-api-proxy'
+
+env:
+  APP_NAME: v2ray-api-proxy
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows]
+        goarch: [amd64]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.24"
+
+      - name: Build binary
+        run: |
+          echo "Building for ${{ matrix.goos }}/${{ matrix.goarch }}..."
+          output_name="$APP_NAME"
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            output_name="$output_name.exe"
+          fi
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build \
+                      -ldflags "-s -w" \
+                      -trimpath \
+                      -o $output_name
+
+      - name: Package binary
+        run: |
+          output_name="$APP_NAME"
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            output_name="$output_name.exe"
+          fi
+          zip -r $APP_NAME.zip $output_name
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.goos }}-${{ matrix.goarch }}-binary
+          path: |
+            ${{ env.APP_NAME }}.zip
