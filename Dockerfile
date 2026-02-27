@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 # Install C++ development tools
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -8,6 +8,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 		pkg-config meson \
         ca-certificates \
 		curl locales \
+        git python3-jsonschema \
 	&& echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen \
     && apt-get clean \

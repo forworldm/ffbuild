@@ -15,11 +15,11 @@ jobs:
 
       - name: Build image
         run: |
-          docker build -t bullseye-cpp .
+          docker build -t bookworm-cpp .
 
       - name: Create container
         run: |
-          docker create --name build-container bullseye-cpp
+          docker create --name build-container bookworm-cpp
 
       - name: Export rootfs (compressed)
         run: |
@@ -32,6 +32,6 @@ jobs:
       - name: Upload RootFS Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wsl-bullseye-cpp-rootfs
+          name: wsl-bookworm-cpp-rootfs
           path: rootfs.tar.gz
           retention-days: 5
