@@ -32,7 +32,7 @@ make -j4
 make install "DESTDIR=$bindir"
 popd
 
-git clone --single-branch --branch v3.5.2 --depth 1 https://github.com/microsoft/mimalloc.git
+git clone --single-branch --branch v3.5.3 --depth 1 https://github.com/microsoft/mimalloc.git
 pushd mimalloc
 cmake -B _build -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_PLATFORM_NO_VERSIONED_SONAME=ON -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
@@ -40,6 +40,20 @@ cmake -B _build -DCMAKE_BUILD_TYPE=Release \
     -DMI_BUILD_{STATIC,OBJECT,TESTS}=OFF
 cmake --build _build
 cmake --install _build --prefix "$bindir"
+popd
+
+git clone --single-branch --branch main --depth 1 https://github.com/krolchonok/sizer.git
+pushd sizer
+rustup target add x86_64-unknown-linux-musl
+cargo build --release --target x86_64-unknown-linux-musl
+cp -p target/x86_64-unknown-linux-musl/release/sizer "$bindir"
+popd
+
+git clone --single-branch --branch main --depth 1 https://github.com/jantomec/FileInspector.git
+pushd FileInspector
+rustup target add x86_64-unknown-linux-musl
+cargo build --release --target x86_64-unknown-linux-musl
+cp -p target/x86_64-unknown-linux-musl/release/fileinspector "$bindir"
 popd
 
 tar -cf "htop.tar" -C "$bindir" .
