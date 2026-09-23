@@ -11,8 +11,9 @@ export CXXFLAGS="$CFLAGS"
 export LDFLAGS="-L$prefix/lib -static-libgcc -Wl,--gc-sections"
 export PKG_CONFIG_PATH="$prefix/lib/pkgconfig"
 
-curl -L -O https://invisible-island.net/datafiles/release/ncurses.tar.gz
-tar -xf ncurses.tar.gz && rm ncurses.tar.gz
+ncver="6.6"
+curl -L -O https://ftp.gnu.org/gnu/ncurses/ncurses-$ncver.tar.gz
+tar -xf ncurses-$ncver.tar.gz && rm ncurses-$ncver.tar.gz
 pushd ncurses*
 mkdir -p _build && cd _build
 ../configure --without-{shared,debug,pcre2}
@@ -32,7 +33,7 @@ make -j4
 make install "DESTDIR=$bindir"
 popd
 
-git clone --single-branch --branch v3.5.2 --depth 1 https://github.com/microsoft/mimalloc.git
+git clone --single-branch --branch v3.6.1 --depth 1 https://github.com/microsoft/mimalloc.git
 pushd mimalloc
 cmake -B _build -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_PLATFORM_NO_VERSIONED_SONAME=ON -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
@@ -40,6 +41,13 @@ cmake -B _build -DCMAKE_BUILD_TYPE=Release \
     -DMI_BUILD_{STATIC,OBJECT,TESTS}=OFF
 cmake --build _build
 cmake --install _build --prefix "$bindir"
+popd
+
+git clone --single-branch --branch main --depth 1 https://github.com/jantomec/FileInspector.git
+pushd FileInspector
+rustup target add x86_64-unknown-linux-musl
+cargo build --release --target x86_64-unknown-linux-musl
+cp -p target/x86_64-unknown-linux-musl/release/fileinspector "$bindir"
 popd
 
 tar -cf "htop.tar" -C "$bindir" .
