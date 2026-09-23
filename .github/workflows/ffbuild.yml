@@ -3,14 +3,18 @@ name: ffbuild
 on:
   push:
     branches:
-      - 'dev-htop'
+      - 'dev-binutils'
 
 jobs:
     build:
         runs-on: ubuntu-22.04
+        container:
+          image: alpine:latest
         steps:
             - name: checkout
               uses: actions/checkout@v4
+
+            - run: apk add --no-cache bash
 
             - name: build
               run: ./build.sh
@@ -18,5 +22,5 @@ jobs:
             - name: upload
               uses: actions/upload-artifact@v4
               with:
-                  name: htop
-                  path: ./htop.tar
+                  name: binutils
+                  path: install
