@@ -3,7 +3,7 @@ name: ffbuild
 on:
   push:
     branches:
-      - 'dev-htop'
+      - 'dev-wgx'
 
 jobs:
     build:
@@ -18,5 +18,5 @@ jobs:
             - name: upload
               uses: actions/upload-artifact@v4
               with:
-                  name: htop
-                  path: ./htop.tar
+                  name: wgx
+                  path: build/wgx
